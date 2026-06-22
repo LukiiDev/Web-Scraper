@@ -73,5 +73,5 @@ It is **not intended for malicious use or unauthorized scanning.**
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/LukiiDev/web-security-scanner.git
+git clone https://github.com/LukiiDev/Web-Scraper.git
 cd web-security-scanner
