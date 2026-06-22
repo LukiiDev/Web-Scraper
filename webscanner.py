@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 ██╗    ██╗███████╗██████╗ ███████╗ ██████╗██████╗  █████╗ ██████╗ ███████╗██████╗ 
 ██║    ██║██╔════╝██╔══██╗██╔════╝██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗
@@ -50,13 +49,13 @@ class MatrixEffect:
         chars = ['0', '1', ' ', '░', '▒', '▓', '█']
         columns = os.get_terminal_size().columns
         
-        # Save cursor position
+        
         sys.stdout.write('\033[s')
         
         end_time = time.time() + duration
         frames = []
         
-        # Pre-calculate frames for smooth animation
+        
         for frame in range(int(duration * 15)):
             frame_data = []
             for col in range(min(columns, 80)):
@@ -68,7 +67,7 @@ class MatrixEffect:
                     frame_data.append(' ')
             frames.append(''.join(frame_data))
         
-        # Animate
+        
         start_time = time.time()
         frame_idx = 0
         while time.time() - start_time < duration:
@@ -77,10 +76,10 @@ class MatrixEffect:
             print(frames[frame_idx % len(frames)], end='')
             sys.stdout.flush()
             frame_idx += 1
-            time.sleep(0.033)  # ~30fps
+            time.sleep(0.033)  
         
-        sys.stdout.write('\033[u')  # Restore cursor
-        sys.stdout.write('\033[K')  # Clear line
+        sys.stdout.write('\033[u')  
+        sys.stdout.write('\033[K')  
         sys.stdout.flush()
 
 class HackerAnimation:
@@ -150,14 +149,14 @@ class AdvancedScanner:
         self.scan_timestamp = datetime.now().isoformat()
         self.scan_id = hashlib.md5(target_url.encode()).hexdigest()[:8]
         
-        # Advanced payloads
+        
         self.payloads = self._load_payloads()
         
     def _create_session(self) -> requests.Session:
         """Create a badass session with advanced features"""
         session = requests.Session()
         
-        # Enhanced retry strategy
+        
         retry_strategy = Retry(
             total=3,
             backoff_factor=2,
@@ -173,7 +172,7 @@ class AdvancedScanner:
         session.mount("http://", adapter)
         session.mount("https://", adapter)
         
-        # Advanced headers to avoid detection
+        
         session.headers.update({
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -357,7 +356,7 @@ class AdvancedScanner:
         
         test_targets = []
         
-        # Add form targets
+        
         for form in forms:
             form_url = urljoin(self.target_url, form['action']) if form['action'] else self.target_url
             test_targets.append({
@@ -417,13 +416,13 @@ class AdvancedScanner:
         method = target['method']
         fields = target['fields']
         
-        # Prepare base data with default values
+        
         for field in fields:
             base_data[field['name']] = 'test_value'
         
-        # Test different SQL injection payloads
+      
         for category, payloads in self.payloads['sqli'].items():
-            for payload in payloads[:3]:  # Limit testing for performance
+            for payload in payloads[:3]: 
                 test_data = base_data.copy()
                 for field in fields:
                     if field['type'] in ['text', 'search', 'email', 'number']:
@@ -436,7 +435,7 @@ class AdvancedScanner:
                     else:
                         response = self.session.get(url, params=test_data, timeout=self.timeout)
                     
-                    # Check for SQL error patterns
+                    
                     if self._detect_sqli_response(response.text):
                         findings.append({
                             'type': 'SQL Injection',
@@ -449,7 +448,7 @@ class AdvancedScanner:
                             'description': f'Potential {category} SQL injection detected',
                             'evidence': self._extract_sqli_evidence(response.text)
                         })
-                        break  # Found one vulnerability in this target
+                        break  
                         
                 except Exception as e:
                     continue
@@ -574,7 +573,7 @@ class AdvancedScanner:
         fields = target['fields']
         context = target.get('context', 'html')
         
-        # Select appropriate payloads based on context
+        
         all_payloads = []
         all_payloads.extend(self.payloads['xss']['reflected'])
         all_payloads.extend(self.payloads['xss']['dom_based'])
@@ -582,7 +581,7 @@ class AdvancedScanner:
         if context in ['html', 'attribute']:
             all_payloads.extend(self.payloads['xss']['blind'])
         
-        for payload in all_payloads[:5]:  # Limit for performance
+        for payload in all_payloads[:5]:  
             test_data = {}
             for field in fields:
                 if field['type'] in ['text', 'search', 'email', 'url', 'number']:
@@ -596,7 +595,7 @@ class AdvancedScanner:
                 else:
                     response = self.session.get(url, params=test_data, timeout=self.timeout)
                 
-                # Check if payload is reflected
+                
                 if payload in response.text:
                     findings.append({
                         'type': 'Cross-Site Scripting (XSS)',
@@ -608,7 +607,7 @@ class AdvancedScanner:
                         'description': f'Payload reflected in response (context: {context})',
                         'evidence': f'Payload "{payload[:50]}" found in response'
                     })
-                    break  # Found XSS in this target
+                    break  
                     
             except Exception as e:
                 continue
@@ -619,7 +618,7 @@ class AdvancedScanner:
         """Detect context of form fields"""
         context = 'html'
         
-        # Check for attributes that might indicate different contexts
+        
         for field in form['fields']:
             if 'value' in field:
                 if '<' in field['value'] or '>' in field['value']:
@@ -642,7 +641,7 @@ class AdvancedScanner:
                 'enctype': form.get('enctype', 'application/x-www-form-urlencoded')
             }
             
-            # Find all input elements
+           
             for input_elem in form.find_all(['input', 'textarea', 'select']):
                 field_data = {
                     'name': input_elem.get('name', ''),
@@ -651,7 +650,7 @@ class AdvancedScanner:
                     'required': input_elem.get('required') is not None
                 }
                 
-                # Get select options
+                
                 if input_elem.name == 'select':
                     options = []
                     for option in input_elem.find_all('option'):
@@ -705,7 +704,7 @@ class AdvancedScanner:
                         try:
                             response = self.session.get(test_url, timeout=self.timeout)
                             
-                            # Check for file inclusion indicators
+                            
                             if any(indicator in response.text for indicator in ['root:x:', 'Microsoft Windows', 'log_directory', '[extensions]']):
                                 self.vulnerabilities.append({
                                     'type': 'Local File Inclusion (LFI)',
@@ -749,7 +748,7 @@ class AdvancedScanner:
                     else:
                         response = self.session.get(form_url, params=test_data, timeout=self.timeout)
                     
-                    # Check for command output indicators
+                    
                     command_outputs = ['uid=', 'gid=', 'groups=', 'root', 'www-data', 'Administrator', 'User']
                     if any(output in response.text for output in command_outputs):
                         self.vulnerabilities.append({
@@ -788,7 +787,7 @@ class AdvancedScanner:
                 try:
                     response = self.session.post(form_url, data=test_data, timeout=self.timeout)
                     
-                    # Check for SSRF indicators
+                   
                     ssrf_indicators = ['169.254.169.254', 'metadata.google.internal', 'localhost']
                     if any(indicator in response.text for indicator in ssrf_indicators):
                         self.vulnerabilities.append({
@@ -879,7 +878,7 @@ class AdvancedScanner:
                 else:
                     console.print(f"[dim]○ {header}: Not required[/dim]")
                     
-            # Advanced header analysis
+            
             self._analyze_cors(headers)
             self._analyze_cache(headers)
             self._analyze_cookies(response.cookies)
@@ -993,7 +992,7 @@ class AdvancedScanner:
                         else:
                             response = self.session.get(form_url, params=test_data, timeout=self.timeout)
                         
-                        # Check for indicators of successful authentication
+                        
                         auth_indicators = ['dashboard', 'profile', 'logout', 'welcome', 'admin', 'account']
                         if any(indicator in response.url.lower() or indicator in response.text.lower() 
                                for indicator in auth_indicators):
@@ -1021,7 +1020,7 @@ class AdvancedScanner:
         if not self.fetch_page():
             return False
         
-        # Run all scans
+        
         self.test_headers_security()
         self.advanced_sql_injection_test()
         self.advanced_xss_test()
@@ -1035,7 +1034,7 @@ class AdvancedScanner:
     
     def generate_report(self) -> Dict:
         """Generate comprehensive scan report"""
-        # Group vulnerabilities by severity
+        
         for vuln in self.vulnerabilities:
             severity = vuln.get('severity', 'Low').lower()
             if severity not in self.vulnerability_groups:
@@ -1077,7 +1076,7 @@ class AdvancedScanner:
         console.print(f"[cyan]Response Time:[/cyan] {report['page_info'].get('response_time', 0):.2f}s")
         console.print(f"[cyan]Redirects:[/cyan] {report['page_info'].get('redirect_count', 0)}")
         
-        # Vulnerability summary table
+        
         summary_table = Table(title="Vulnerability Summary", box=box.ROUNDED)
         summary_table.add_column("Severity", style="bold")
         summary_table.add_column("Count", justify="right")
@@ -1094,7 +1093,7 @@ class AdvancedScanner:
         summary_table.add_row("[bold]TOTAL[/bold]", f"[bold]{report['total_vulnerabilities']}[/bold]")
         console.print(summary_table)
         
-        # Detailed vulnerabilities
+        
         if report['vulnerabilities']:
             vuln_table = Table(title="Detailed Vulnerabilities", box=box.ROUNDED)
             vuln_table.add_column("#", style="dim")
@@ -1132,7 +1131,7 @@ class AdvancedScanner:
             json.dump(report, f, indent=2)
         console.print(f"[green]✓ Report saved to {filename}[/green]")
 
-# Enhanced menu system with the cool effect you requested
+
 class UltimateHackerMenu:
     def __init__(self):
         self.running = True
@@ -1143,7 +1142,7 @@ class UltimateHackerMenu:
         # Clear screen
         os.system('cls' if os.name == 'nt' else 'clear')
         
-        # Hacker banner with matrix effect
+        
         HackerAnimation.print_hacker_banner()
         MatrixEffect.matrix_rain(3)
         
@@ -1221,12 +1220,11 @@ class UltimateHackerMenu:
             response = input(f"{Fore.CYAN}Test {name}? (y/n) [{ 'y' if default else 'n'}]: {Style.RESET_ALL}").strip().lower()
             selected[key] = response != 'n' if response else default
         
-        # Build custom scanner with selected modules
-        # This would need to be implemented - for now, just run full scan
+        
         console.print("\n[bold yellow]Running custom scan...[/bold yellow]")
         scanner = AdvancedScanner(url, threads=10, timeout=10)
         
-        # Run only selected modules
+        
         if not scanner.fetch_page():
             console.print("[red]Failed to fetch target![/red]")
             return
